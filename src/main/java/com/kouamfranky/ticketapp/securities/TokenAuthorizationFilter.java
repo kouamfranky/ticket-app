@@ -1,5 +1,8 @@
 package com.kouamfranky.ticketapp.securities;
 
+import com.kouamfranky.ticketapp.models.entities.User;
+import com.kouamfranky.ticketapp.repository.UserRepository;
+import com.kouamfranky.ticketapp.service.inter.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,10 +31,12 @@ import java.io.IOException;
 @Service
 public class TokenAuthorizationFilter extends OncePerRequestFilter {
     private final TokenProvider jwtTokenProvider;
+    private final UserService userService;
     private final UserDetailsService userDetailsService;
 
-    public TokenAuthorizationFilter(TokenProvider jwtTokenProvider, UserDetailsService userDetailsService) {
+    public TokenAuthorizationFilter(TokenProvider jwtTokenProvider, UserService userService, UserDetailsService userDetailsService) {
         this.jwtTokenProvider = jwtTokenProvider;
+        this.userService = userService;
         this.userDetailsService = userDetailsService;
     }
 
@@ -41,8 +46,9 @@ public class TokenAuthorizationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         String token = resolveToken(request);
         if (token != null && jwtTokenProvider.validateToken(token)) {
-            String username = jwtTokenProvider.getUsername(token);
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+            String idUser = jwtTokenProvider.getIdUser(token);
+            User userConnected = userService.getUser(Long.parseLong(idUser));
+            UserDetails userDetails = userDetailsService.loadUserByUsername(userConnected.getUsername());
             if (userDetails != null) {
                 var authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

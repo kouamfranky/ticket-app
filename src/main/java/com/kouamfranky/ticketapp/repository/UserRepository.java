@@ -22,4 +22,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("SELECT u FROM User u WHERE u.nom LIKE :token OR u.prenom LIKE :token OR u.email LIKE :token OR u.username LIKE :token  ")
     Page<User> findAllUserByToken(String token, Pageable pageable);
 
+    boolean existsByUsername(String username);
+    User findByUsername(String username);
+
 }

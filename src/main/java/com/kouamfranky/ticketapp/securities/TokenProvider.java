@@ -25,8 +25,8 @@ public class TokenProvider {
     private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
     private final long validityInMilliseconds = 3600000; // 1 hour
 
-    public String createToken(String username) {
-        Claims claims = Jwts.claims().setSubject(username);
+    public String createToken(String idUser) {
+        Claims claims = Jwts.claims().setSubject(idUser);
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityInMilliseconds);
 
@@ -38,7 +38,7 @@ public class TokenProvider {
                 .compact();
     }
 
-    public String getUsername(String token) {
+    public String getIdUser(String token) {
         return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getSubject();
     }
 
