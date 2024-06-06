@@ -40,7 +40,7 @@ public class UserController {
 
     @Operation(summary = "Récupérer tous les utilisateurs", description = "Retourne la liste des utilisateurs paginer à 20 elements par page par defaut, avec possibilite de faire une recherche dynamique via un token")
     @GetMapping(path = "/users")
-    public ResponseEntity<ApiResponse<Page<UserResponseDTO>>> getAllUsers(@RequestParam(name = "token") @Parameter(description = "token de recherche dynamique sur le nom, prenom, email et username des utilisateurs") String token,
+    public ResponseEntity<ApiResponse<Page<UserResponseDTO>>> getAllUsers(@RequestParam(name = "token", defaultValue = "") @Parameter(description = "token de recherche dynamique sur le nom, prenom, email et username des utilisateurs") String token,
                                                                           @RequestParam(name = "page", defaultValue = "0") @Parameter(description = "la page a recuperer") int page,
                                                                           @RequestParam(name="size", defaultValue = "20") @Parameter(description = "la nombre d'element a recuperer par page") int size ) {
         return ResponseEntity.ok(new ApiResponse<>(true, StringsUtils.SUCCESS_MESSAGE,
@@ -49,7 +49,7 @@ public class UserController {
     @Operation(summary = "Récupérer les tickets assignés à l'utilisateur", description = "Retourne la liste des tickets assignés a un utilisateur paginer à 20 elements par page par defaut, avec possibilite de faire une recherche dynamique via un token")
     @GetMapping(path = "/users/{id}/ticket")
     public ResponseEntity<ApiResponse<Page<TicketResponseDTO>>> findTicketsUsers(@PathVariable("id") @Parameter(description = "ID de l'utilisateur a modifier") Long idUser,
-                                                                                 @RequestParam(name = "token") @Parameter(description = "token de recherche dynamique sur le titre et la description des tickets") String token,
+                                                                                 @RequestParam(name = "token", defaultValue = "") @Parameter(description = "token de recherche dynamique sur le titre et la description des tickets") String token,
                                                                                  @RequestParam(name = "page", defaultValue = "0") @Parameter(description = "la page a recuperer") int page,
                                                                                  @RequestParam(name="size", defaultValue = "20") @Parameter(description = "la nombre d'element a recuperer par page") int size) {
         return ResponseEntity.ok(new ApiResponse<>(true, StringsUtils.SUCCESS_MESSAGE,

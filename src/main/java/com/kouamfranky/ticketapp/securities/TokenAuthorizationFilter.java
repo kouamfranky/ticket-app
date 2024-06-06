@@ -1,68 +1,77 @@
 package com.kouamfranky.ticketapp.securities;
 
-import com.kouamfranky.ticketapp.models.entities.User;
-import com.kouamfranky.ticketapp.repository.UserRepository;
-import com.kouamfranky.ticketapp.service.inter.UserService;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kouamfranky.ticketapp.service.LocalUserDetailService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
-import org.springframework.stereotype.Service;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 /**
  * Copyright (c) 2024, Iforce5, All Right Reserved.
  * https://iforce5.com
  * <p>
- * When: @created 05/juin/2024 -- 08:25
+ * When: @created 06/juin/2024 -- 04:51
  *
- * @author name :  Franky Brice on 05/06/2024
+ * @author name :  Franky Brice on 06/06/2024
  * @author email : kouamfranky@gmail.com /  franky.kouam@iforce5.com
  * Project : @project ticket-app
- * Package : @package com.kouamfranky.ticketapp.securities
+ * Package : @package com.kouamfranky.ticketapp.config
  **/
-@Service
 public class TokenAuthorizationFilter extends OncePerRequestFilter {
-    private final TokenProvider jwtTokenProvider;
-    private final UserService userService;
-    private final UserDetailsService userDetailsService;
+    Logger LOGGER = LogManager.getLogger(TokenAuthorizationFilter.class);
 
-    public TokenAuthorizationFilter(TokenProvider jwtTokenProvider, UserService userService, UserDetailsService userDetailsService) {
-        this.jwtTokenProvider = jwtTokenProvider;
-        this.userService = userService;
-        this.userDetailsService = userDetailsService;
+    private final TokenProvider tokenProvider;
+    private final LocalUserDetailService localUserDetailService;
+
+    public TokenAuthorizationFilter(TokenProvider tokenProvider, LocalUserDetailService localUserDetailService) {
+        this.tokenProvider = tokenProvider;
+        this.localUserDetailService = localUserDetailService;
     }
-
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException {
-        String token = resolveToken(request);
-        if (token != null && jwtTokenProvider.validateToken(token)) {
-            String idUser = jwtTokenProvider.getIdUser(token);
-            User userConnected = userService.getUser(Long.parseLong(idUser));
-            UserDetails userDetails = userDetailsService.loadUserByUsername(userConnected.getUsername());
-            if (userDetails != null) {
-                var authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        if (request.getServletPath().equals("/login") || request.getServletPath().equals("/refresh")) {
+            filterChain.doFilter(request, response);
+        } else {
+            String authorizationHeader = request.getHeader(AUTHORIZATION);
+            if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+                try {
+                    // retirer 'Bearer ' pour avoir le token
+                    String token = authorizationHeader.substring("Bearer ".length());
+
+                    // recuperer les infos de l'utilisateur
+                    UserDetails userDetails = localUserDetailService.loadUserByUsername(tokenProvider.getUsername(token));
+
+                    UsernamePasswordAuthenticationToken authenticationToken =
+                            new UsernamePasswordAuthenticationToken(userDetails, null, tokenProvider.getAuthorities(token));
+
+                    SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                    filterChain.doFilter(request, response);
+                } catch (JWTVerificationException exception) {
+                    response.setStatus(FORBIDDEN.value());
+                    LOGGER.error(exception.getMessage());
+                    response.setContentType(APPLICATION_JSON_VALUE);
+                    new ObjectMapper().writeValue(response.getOutputStream(), "Access Denied");
+                }
+            } else {
+                filterChain.doFilter(request, response);
             }
         }
-        filterChain.doFilter(request, response);
     }
 
-    private String resolveToken(HttpServletRequest request) {
-        String bearerToken = request.getHeader("Authorization");
-        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7);
-        }
-        return null;
-    }
+
 }

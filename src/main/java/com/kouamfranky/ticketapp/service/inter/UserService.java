@@ -1,6 +1,5 @@
 package com.kouamfranky.ticketapp.service.inter;
 
-import com.kouamfranky.ticketapp.models.dtos.ApiResponse;
 import com.kouamfranky.ticketapp.models.dtos.requests.LoginRequest;
 import com.kouamfranky.ticketapp.models.dtos.requests.UserRequestDTO;
 import com.kouamfranky.ticketapp.models.dtos.responses.TicketResponseDTO;

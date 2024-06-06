@@ -1,5 +1,6 @@
 package com.kouamfranky.ticketapp.service.impl;
 
+import com.kouamfranky.ticketapp.exceptions.BadRequestException;
 import com.kouamfranky.ticketapp.exceptions.RessourceNotFoundException;
 import com.kouamfranky.ticketapp.models.dtos.requests.LoginRequest;
 import com.kouamfranky.ticketapp.models.dtos.requests.UserRequestDTO;
@@ -20,8 +21,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import static com.kouamfranky.ticketapp.utils.StringsUtils.ID;
-import static com.kouamfranky.ticketapp.utils.StringsUtils.USER;
+import static com.kouamfranky.ticketapp.utils.StringsUtils.*;
 
 /**
  * Copyright (c) 2024, Iforce5, All Right Reserved.
@@ -58,14 +58,25 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDTO addUser(UserRequestDTO dto) {
+        if (userRepository.existsByUsername(dto.getUsername()))
+            throw new BadRequestException(String.format(USERMANE_IS_ALREADY_EXIST, dto.getUsername()));
+        if (userRepository.existsByEmail(dto.getEmail()))
+            throw new BadRequestException(String.format(EMAIL_IS_ALREADY_EXIST, dto.getEmail()));
+
         User user = UserRequestDTO.buildToCreateFromDTO(dto, passwordEncoder.encode(dto.getPassword()));
         return UserResponseDTO.buildFromEntity(userRepository.save(user));
     }
 
     @Override
     public UserResponseDTO updateUser(UserRequestDTO dto, Long idUser) {
-        User user = UserRequestDTO.buildToUpdateFromDTO(getUser(idUser), dto);
-        return UserResponseDTO.buildFromEntity(userRepository.save(user));
+        User user = getUser(idUser);
+        if (!user.getUsername().equals(dto.getUsername()) && userRepository.existsByUsername(dto.getUsername()))
+            throw new BadRequestException(String.format(USERMANE_IS_ALREADY_EXIST, dto.getUsername()));
+        if (!user.getEmail().equals(dto.getEmail()) && userRepository.existsByEmail(dto.getEmail()))
+            throw new BadRequestException(String.format(EMAIL_IS_ALREADY_EXIST, dto.getEmail()));
+
+        User userToUpdate = UserRequestDTO.buildToUpdateFromDTO(user, dto);
+        return UserResponseDTO.buildFromEntity(userRepository.save(userToUpdate));
     }
 
     @Override
@@ -84,16 +95,16 @@ public class UserServiceImpl implements UserService {
         if (!userRepository.existsByUsername(loginRequest.getUsername())) {
             throw new RessourceNotFoundException("Utilisateur", "username", loginRequest.getUsername());
         }
-        User user = userRepository.findByUsername(loginRequest.getUsername());
-        Authentication authentication = authenticationManager
-                .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+        try {
+            Authentication authentication = authenticationManager
+                    .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            User user = (User) authentication.getPrincipal();
+            String jwt = tokenProvider.createToken(authentication);
 
-      authentication.getPrincipal();
-
-
-        String jwt = tokenProvider.createToken(String.valueOf(user.getId()));
-
-        return UserInfosDTO.buildUserInfosByUser(user,jwt);
+            return UserInfosDTO.buildUserInfosByUser(user,jwt);
+        }catch (Exception ex){
+            throw new BadRequestException(ex.getMessage());
+        }
     }
 }

@@ -23,6 +23,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Page<User> findAllUserByToken(String token, Pageable pageable);
 
     boolean existsByUsername(String username);
+    boolean existsByEmail(String email);
     User findByUsername(String username);
 
 }

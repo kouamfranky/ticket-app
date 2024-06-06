@@ -6,8 +6,8 @@ import com.kouamfranky.ticketapp.models.dtos.requests.LoginRequest;
 import com.kouamfranky.ticketapp.models.dtos.responses.UserInfosDTO;
 import com.kouamfranky.ticketapp.service.inter.UserService;
 import com.kouamfranky.ticketapp.utils.StringsUtils;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,6 +36,7 @@ public class AuthController {
         this.userService = userService;
     }
 
+    @Operation(summary = "connexion d'un utilisateur", description = "Permet a un utilisateur de se connecter afin d'avoir le token d'accès au ressource de l'application")
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<UserInfosDTO>> authenticateUser(@Valid @RequestBody LoginRequest loginRequest, BindingResult result) {
         if (result.hasErrors()) {
