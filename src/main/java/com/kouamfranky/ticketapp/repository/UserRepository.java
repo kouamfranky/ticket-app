@@ -17,7 +17,7 @@ import org.springframework.data.jpa.repository.Query;
  * Project : @project ticket-app
  * Package : @package com.kouamfranky.ticketapp.repository
  **/
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends JpaRepository<User, Long>, GenericRepository<User> {
 
     @Query("SELECT u FROM User u WHERE u.nom LIKE :token OR u.prenom LIKE :token OR u.email LIKE :token OR u.username LIKE :token  ")
     Page<User> findAllUserByToken(String token, Pageable pageable);

@@ -16,6 +16,7 @@ public class StringsUtils {
     public static final String SUCCESS_MESSAGE = "Opération effectuée avec succès !";
     public static final String ERROR_MESSAGE = "Opération echouée !";
     public static final String USER = "User";
+    public static final String TICKET = "Ticket";
     public static final String ID = "ID";
     public static final String USERMANE_IS_ALREADY_EXIST = "le nom d'utilisateur %s est déjà utilisé";
     public static final String EMAIL_IS_ALREADY_EXIST = "l'adresse email %s est déjà utilisée";

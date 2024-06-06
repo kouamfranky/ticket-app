@@ -1,11 +1,18 @@
 package com.kouamfranky.ticketapp.service.impl;
 
+import com.kouamfranky.ticketapp.exceptions.RessourceNotFoundException;
 import com.kouamfranky.ticketapp.models.dtos.requests.TicketRequestDTO;
 import com.kouamfranky.ticketapp.models.dtos.responses.TicketResponseDTO;
+import com.kouamfranky.ticketapp.models.dtos.responses.UserResponseDTO;
+import com.kouamfranky.ticketapp.models.entities.Ticket;
+import com.kouamfranky.ticketapp.models.entities.User;
+import com.kouamfranky.ticketapp.repository.TicketRepository;
 import com.kouamfranky.ticketapp.service.inter.TicketService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import static com.kouamfranky.ticketapp.utils.StringsUtils.*;
 
 /**
  * Copyright (c) 2024, Iforce5, All Right Reserved.
@@ -20,28 +27,41 @@ import org.springframework.stereotype.Service;
  **/
 @Service
 public class TicketServiceImpl implements TicketService {
+    private final TicketRepository ticketRepository;
+
+    public TicketServiceImpl(TicketRepository ticketRepository) {
+        this.ticketRepository = ticketRepository;
+    }
+
     @Override
     public Page<TicketResponseDTO> getAllTickets(String token, Pageable pageable) {
-        return null;
+        return TicketResponseDTO.buildFromEntityPage(ticketRepository.findAllTicketByToken("%" + token + "%", pageable));
     }
 
     @Override
     public TicketResponseDTO getTicketById(long id) {
-        return null;
+        return TicketResponseDTO.buildFromEntity(getTicket(id));
     }
-
+    public Ticket getTicket(Long idTicket) {
+        return ticketRepository.findById(idTicket).orElseThrow(
+                ()-> new RessourceNotFoundException(TICKET, ID, idTicket));
+    }
     @Override
     public TicketResponseDTO addTicket(TicketRequestDTO dto) {
-        return null;
+        return TicketResponseDTO.buildFromEntity(ticketRepository.save(TicketRequestDTO.buildToCreateFromDTO(dto)));
     }
 
     @Override
     public TicketResponseDTO updateTicket(TicketRequestDTO dto, long id) {
-        return null;
+        Ticket ticket = getTicket(id);
+        Ticket ticketToUpdate = TicketRequestDTO.buildToUpdateFromDTO(ticket, dto);
+        return TicketResponseDTO.buildFromEntity(ticketRepository.save(ticketToUpdate));
     }
 
     @Override
     public TicketResponseDTO affectTicketToUser(long idTicket, long useId) {
+        Ticket ticket = getTicket(idTicket);
+        User user = use
         return null;
     }
 }

@@ -33,6 +33,9 @@ public class TicketRequestDTO {
     @Schema(description = "description du ticket", example = "il est question d'implementer une api qui permettra de lister les utilisateurs du systeme")
     private String description;
 
+    @Schema(description = "statut du ticket", example = "ENCOURS", allowableValues = "ENCOURS,TERMINER,ANNULER")
+    private String statut;
+
     public static Ticket buildToCreateFromDTO(TicketRequestDTO dto){
         return Ticket.TicketBuilder.aTicket()
                 .titre(dto.getTitre())
@@ -44,6 +47,7 @@ public class TicketRequestDTO {
     public static Ticket buildToUpdateFromDTO(Ticket ticket, TicketRequestDTO dto){
         ticket.setTitre(dto.getTitre());
         ticket.setDescription(dto.getDescription());
+        ticket.setStatut(StatutTicketEnum.valueOf(dto.getStatut()));
         return ticket;
     }
 }

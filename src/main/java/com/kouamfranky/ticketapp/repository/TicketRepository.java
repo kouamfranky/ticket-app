@@ -18,11 +18,14 @@ import org.springframework.data.jpa.repository.Query;
  * Project : @project ticket-app
  * Package : @package com.kouamfranky.ticketapp.repository
  **/
-public interface TicketRepository extends JpaRepository<Ticket, Long> {
+public interface TicketRepository extends JpaRepository<Ticket, Long>, GenericRepository<Ticket> {
 
     @Query("SELECT t FROM Ticket t " +
             "LEFT JOIN User u ON u.id = t.user.id " +
             "WHERE u=:user AND (t.titre LIKE :token OR t.description LIKE :token) ")
     Page<Ticket> findByUserAndToken(User user, String token, Pageable pageable);
 
+    @Query("SELECT t FROM Ticket t " +
+            "WHERE t.titre LIKE :token OR t.description LIKE :token  OR CONCAT(t.statut,'') LIKE :token ")
+    Page<Ticket> findAllTicketByToken(String token, Pageable pageable);
 }
