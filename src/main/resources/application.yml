@@ -7,7 +7,7 @@ spring:
       path: /h2-console
   datasource:
     # url: jdbc:h2:mem:testdb
-    url: jdbc:h2:~/testdb;DB_CLOSE_ON_EXIT=FALSE;AUTO_RECONNECT=TRUE
+    url: jdbc:h2:~/ticket_bd;DB_CLOSE_ON_EXIT=FALSE;AUTO_RECONNECT=TRUE
     driverClassName: org.h2.Driver
     username: sa
     password: Root#123*
