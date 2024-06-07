@@ -27,5 +27,6 @@ Ce projet est un système de gestion de tickets simple développé en Java avec 
 5. **Tests**
     - Tests unitaires pour les services et contrôleurs avec JUnit et Mockito.
 
-
-
+6. **Branches du depot**
+   - main : branche principale
+   - working : branche de développement
