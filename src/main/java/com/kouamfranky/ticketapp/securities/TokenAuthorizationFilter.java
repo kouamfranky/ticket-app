@@ -73,5 +73,4 @@ public class TokenAuthorizationFilter extends OncePerRequestFilter {
         }
     }
 
-
 }

@@ -14,7 +14,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true
+    show-sql: false
 server:
   port: 8085
 springdoc:
@@ -22,3 +22,7 @@ springdoc:
     path: /v3/api-docs
   swagger-ui:
     path: /swagger-ui.html
+
+app:
+  auth:
+    secret: HDG1204#HJSHSOIUSYGH$SGSS*-SD@!@IU

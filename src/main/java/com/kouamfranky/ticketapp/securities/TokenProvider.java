@@ -6,6 +6,7 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.kouamfranky.ticketapp.models.entities.User;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -14,7 +15,6 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.stream.Collectors;
 
 import static java.util.Arrays.stream;
 
@@ -31,7 +31,8 @@ import static java.util.Arrays.stream;
  **/
 @Component
 public class TokenProvider {
-    private final Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
+    @Value("${app.auth.secret}")
+    private String secretKey;
     private final long validityInMilliseconds = System.currentTimeMillis() + 60 * 60 * 1000; // 1 heur
 
     public String createToken(Authentication authentication) {
@@ -39,16 +40,16 @@ public class TokenProvider {
         return JWT.create()
                 .withSubject(user.getUsername())
                 .withExpiresAt(new Date(validityInMilliseconds)) //
-                .withClaim("roles", user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
+                .withClaim("roles", user.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList())
                 .withClaim("principal", user.toMap())
-                .sign(algorithm);
+                .sign(getAlgorithm());
     }
     public String refeshToken(Authentication authentication) {
         User user = (User) authentication.getPrincipal();
         return JWT.create()
                 .withSubject(user.getUsername())
                 .withExpiresAt(new Date(validityInMilliseconds))
-                .sign(algorithm);
+                .sign(getAlgorithm());
     }
 
 
@@ -66,9 +67,13 @@ public class TokenProvider {
     }
 
     private DecodedJWT getDecodedJWT(String token) {
-        JWTVerifier verifier = JWT.require(algorithm).build();
+        JWTVerifier verifier = JWT.require(getAlgorithm()).build();
         // verifier le token
         return verifier.verify(token);
+    }
+
+    private Algorithm getAlgorithm() {
+        return Algorithm.HMAC256(secretKey.getBytes());
     }
 
 

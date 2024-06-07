@@ -9,7 +9,6 @@ import org.springframework.data.domain.Page;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * Copyright (c) 2024, Iforce5, All Right Reserved.
@@ -34,7 +33,10 @@ public class UserResponseDTO {
     private String nom;
     private String prenom;
 
-
+    /**
+     * @param entity l'entitée User
+     * @return la DTO de reponse d'un utilisateur
+     */
     public static UserResponseDTO buildFromEntity(User entity){
         return Objects.isNull(entity) ? null : UserResponseDTO.builder()
                 .id(entity.getId())
@@ -47,11 +49,19 @@ public class UserResponseDTO {
                 .build();
     }
 
+
+    /**
+     * @param entityList liste non paginée d'utilisateur
+     * @return liste non paginée d'utilisateur
+     */
     public static List<UserResponseDTO> buildFromEntityList(List<User> entityList){
         return Objects.isNull(entityList) || entityList.isEmpty() ? new ArrayList<>() :
-                entityList.stream().map(UserResponseDTO::buildFromEntity).collect(Collectors.toList());
+                entityList.stream().map(UserResponseDTO::buildFromEntity).toList();
     }
-
+    /**
+     * @param entityPage liste Paginée d'utilisateur
+     * @return liste paginée d'utilisateur
+     */
     public static Page<UserResponseDTO> buildFromEntityPage(Page<User> entityPage){
         return Objects.isNull(entityPage) || entityPage.isEmpty() ? Page.empty() :
                 entityPage.map(UserResponseDTO::buildFromEntity);

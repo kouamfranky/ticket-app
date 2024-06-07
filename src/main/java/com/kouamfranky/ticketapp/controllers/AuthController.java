@@ -1,6 +1,5 @@
 package com.kouamfranky.ticketapp.controllers;
 
-import com.kouamfranky.ticketapp.exceptions.MethodArgumentInvalidException;
 import com.kouamfranky.ticketapp.models.dtos.ApiResponse;
 import com.kouamfranky.ticketapp.models.dtos.requests.LoginRequest;
 import com.kouamfranky.ticketapp.models.dtos.responses.UserInfosDTO;
@@ -28,7 +27,7 @@ import java.util.Date;
  * Package : @package com.kouamfranky.ticketapp.controllers
  **/
 @RestController
-public class AuthController {
+public class AuthController extends AbstractController {
 
     private final UserService userService;
 
@@ -39,9 +38,7 @@ public class AuthController {
     @Operation(summary = "connexion d'un utilisateur", description = "Permet a un utilisateur de se connecter afin d'avoir le token d'accès au ressource de l'application")
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<UserInfosDTO>> authenticateUser(@Valid @RequestBody LoginRequest loginRequest, BindingResult result) {
-        if (result.hasErrors()) {
-            throw new MethodArgumentInvalidException(StringsUtils.BINDING_RESULT_ERROR, result.getFieldErrors());
-        }
+        checkValidationFieldsOnDto(result);
         return ResponseEntity.ok(new ApiResponse<>(true, StringsUtils.SUCCESS_MESSAGE,
                 userService.processUserLogin(loginRequest), new Date()));
     }

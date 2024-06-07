@@ -1,6 +1,7 @@
 package com.kouamfranky.ticketapp.models.dtos.requests;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -21,5 +22,6 @@ public class LoginRequest {
     @NotBlank(message = "le nom d'utilisateur est obligatoire")
     private String username;
     @NotBlank(message = "le mot de passe est obligatoire")
+    @Size(min = 6, message = "le mot de passe doit avoir au moins 6 caracteres")
     private String password;
 }

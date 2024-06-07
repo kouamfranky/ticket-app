@@ -1,6 +1,7 @@
 package com.kouamfranky.ticketapp.service.impl;
 
 import com.kouamfranky.ticketapp.exceptions.BadRequestException;
+import com.kouamfranky.ticketapp.exceptions.DuplicateEntryEntityException;
 import com.kouamfranky.ticketapp.exceptions.RessourceNotFoundException;
 import com.kouamfranky.ticketapp.models.dtos.requests.LoginRequest;
 import com.kouamfranky.ticketapp.models.dtos.requests.UserRequestDTO;
@@ -59,9 +60,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDTO addUser(UserRequestDTO dto) {
         if (userRepository.existsByUsername(dto.getUsername()))
-            throw new BadRequestException(String.format(USERMANE_IS_ALREADY_EXIST, dto.getUsername()));
+            throw new DuplicateEntryEntityException(String.format(USERMANE_IS_ALREADY_EXIST, dto.getUsername()));
         if (userRepository.existsByEmail(dto.getEmail()))
-            throw new BadRequestException(String.format(EMAIL_IS_ALREADY_EXIST, dto.getEmail()));
+            throw new DuplicateEntryEntityException(String.format(EMAIL_IS_ALREADY_EXIST, dto.getEmail()));
 
         User user = UserRequestDTO.buildToCreateFromDTO(dto, passwordEncoder.encode(dto.getPassword()));
         return UserResponseDTO.buildFromEntity(userRepository.save(user));
@@ -71,16 +72,16 @@ public class UserServiceImpl implements UserService {
     public UserResponseDTO updateUser(UserRequestDTO dto, Long idUser) {
         User user = getUser(idUser);
         if (!user.getUsername().equals(dto.getUsername()) && userRepository.existsByUsername(dto.getUsername()))
-            throw new BadRequestException(String.format(USERMANE_IS_ALREADY_EXIST, dto.getUsername()));
+            throw new DuplicateEntryEntityException(String.format(USERMANE_IS_ALREADY_EXIST, dto.getUsername()));
         if (!user.getEmail().equals(dto.getEmail()) && userRepository.existsByEmail(dto.getEmail()))
-            throw new BadRequestException(String.format(EMAIL_IS_ALREADY_EXIST, dto.getEmail()));
+            throw new DuplicateEntryEntityException(String.format(EMAIL_IS_ALREADY_EXIST, dto.getEmail()));
 
         User userToUpdate = UserRequestDTO.buildToUpdateFromDTO(user, dto);
         return UserResponseDTO.buildFromEntity(userRepository.save(userToUpdate));
     }
 
-    @Override
-    public User getUser(Long idUser) {
+
+    private User getUser(Long idUser) {
         return userRepository.findById(idUser).orElseThrow(
                 ()-> new RessourceNotFoundException(USER, ID, idUser));
     }

@@ -18,7 +18,7 @@ import org.springframework.data.jpa.repository.Query;
  * Project : @project ticket-app
  * Package : @package com.kouamfranky.ticketapp.repository
  **/
-public interface TicketRepository extends JpaRepository<Ticket, Long>, GenericRepository<Ticket> {
+public interface TicketRepository extends JpaRepository<Ticket, Long>{
 
     @Query("SELECT t FROM Ticket t " +
             "LEFT JOIN User u ON u.id = t.user.id " +

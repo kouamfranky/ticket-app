@@ -26,4 +26,6 @@ public interface TicketService {
     TicketResponseDTO updateTicket(TicketRequestDTO dto, long id);
 
     TicketResponseDTO affectTicketToUser(long idTicket, long useId);
+
+    void deleteTicket(long id);
 }

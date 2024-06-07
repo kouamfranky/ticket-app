@@ -31,14 +31,13 @@ import java.util.Map;
 @Slf4j
 @RestControllerAdvice
 public class RestResponseEntityExceptionHandler {
-    private final String ERROR_STATUS_CODE = "500 Status Code";
-    private final String BAD_REQUEST_STATUS_CODE = "400 Status Code";
+    private final String BAD_REQUEST_STATUS_CODE = "400 Status Code : ";
 
 
     @ExceptionHandler(value = {RessourceNotFoundException.class})
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
     public ResponseEntity<ApiResponse<String>> resourceNotFoundException(RessourceNotFoundException ex, WebRequest request) {
-        log.error("404 Status Code", ex);
+        log.error("404 Status Code : " + ex.getMessage());
         return new ResponseEntity<>(
                 new ApiResponse<>(false, ex.getMessage(), ex.getFieldName(), new Date()),
                 HttpStatus.NOT_FOUND
@@ -48,7 +47,7 @@ public class RestResponseEntityExceptionHandler {
     @ExceptionHandler(value = {BadRequestException.class})
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     public ResponseEntity<ApiResponse<String>> badRequestException(BadRequestException ex, WebRequest request) {
-        log.error(BAD_REQUEST_STATUS_CODE, ex);
+        log.error(BAD_REQUEST_STATUS_CODE + ex.getMessage());
         return new ResponseEntity<>(
                 new ApiResponse<>(false, ex.getMessage(), request.getDescription(false), new Date()),
                 HttpStatus.BAD_REQUEST
@@ -64,7 +63,7 @@ public class RestResponseEntityExceptionHandler {
                     errors.put(err.getField(), err.getDefaultMessage());
                 }
         );
-        log.error(BAD_REQUEST_STATUS_CODE, ex);
+        log.error(BAD_REQUEST_STATUS_CODE + ex.getMessage());
         return new ResponseEntity<>(
                 new ApiResponse<>(false, ex.getMessage(), errors, new Date()),
                 HttpStatus.BAD_REQUEST);
@@ -74,7 +73,7 @@ public class RestResponseEntityExceptionHandler {
     @ExceptionHandler(DuplicateEntryEntityException.class)
     @ResponseStatus(value = HttpStatus.CONFLICT)
     public ResponseEntity<ApiResponse<String>> duplicateEntryException(DuplicateEntryEntityException ex, WebRequest request) {
-        log.error("409 Status Code", ex);
+        log.error("409 Status Code : "+ ex.getMessage());
         return new ResponseEntity<>(
                 new ApiResponse<>(false, ex.getMessage(), ex.getFieldName(), new Date()),
                 HttpStatus.CONFLICT

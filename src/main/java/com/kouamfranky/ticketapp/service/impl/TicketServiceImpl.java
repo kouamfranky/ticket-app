@@ -3,16 +3,17 @@ package com.kouamfranky.ticketapp.service.impl;
 import com.kouamfranky.ticketapp.exceptions.RessourceNotFoundException;
 import com.kouamfranky.ticketapp.models.dtos.requests.TicketRequestDTO;
 import com.kouamfranky.ticketapp.models.dtos.responses.TicketResponseDTO;
-import com.kouamfranky.ticketapp.models.dtos.responses.UserResponseDTO;
 import com.kouamfranky.ticketapp.models.entities.Ticket;
 import com.kouamfranky.ticketapp.models.entities.User;
 import com.kouamfranky.ticketapp.repository.TicketRepository;
+import com.kouamfranky.ticketapp.repository.UserRepository;
 import com.kouamfranky.ticketapp.service.inter.TicketService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import static com.kouamfranky.ticketapp.utils.StringsUtils.*;
+import static com.kouamfranky.ticketapp.utils.StringsUtils.ID;
+import static com.kouamfranky.ticketapp.utils.StringsUtils.TICKET;
 
 /**
  * Copyright (c) 2024, Iforce5, All Right Reserved.
@@ -28,9 +29,11 @@ import static com.kouamfranky.ticketapp.utils.StringsUtils.*;
 @Service
 public class TicketServiceImpl implements TicketService {
     private final TicketRepository ticketRepository;
+    private final UserRepository userRepository;
 
-    public TicketServiceImpl(TicketRepository ticketRepository) {
+    public TicketServiceImpl(TicketRepository ticketRepository, UserRepository userRepository) {
         this.ticketRepository = ticketRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -61,7 +64,13 @@ public class TicketServiceImpl implements TicketService {
     @Override
     public TicketResponseDTO affectTicketToUser(long idTicket, long useId) {
         Ticket ticket = getTicket(idTicket);
-        User user = use
-        return null;
+        User user = userRepository.findById(useId).orElse(null);
+        ticket.setUser(user);
+        return TicketResponseDTO.buildFromEntity(ticketRepository.save(ticket));
+    }
+
+    @Override
+    public void deleteTicket(long id){
+        ticketRepository.deleteById(getTicket(id).getId());
     }
 }

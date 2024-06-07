@@ -5,7 +5,6 @@ import com.kouamfranky.ticketapp.models.dtos.requests.UserRequestDTO;
 import com.kouamfranky.ticketapp.models.dtos.responses.TicketResponseDTO;
 import com.kouamfranky.ticketapp.models.dtos.responses.UserInfosDTO;
 import com.kouamfranky.ticketapp.models.dtos.responses.UserResponseDTO;
-import com.kouamfranky.ticketapp.models.entities.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -27,7 +26,7 @@ public interface UserService {
 
     UserResponseDTO updateUser(UserRequestDTO dto, Long idUser);
 
-    User getUser(Long idUser);
+
 
     Page<TicketResponseDTO> findTicketsUsers(Long idUser, String token, Pageable pageable);
 
