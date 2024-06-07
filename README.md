@@ -11,7 +11,9 @@ Ce projet est un système de gestion de tickets simple développé en Java avec 
 2. **Gestion des Utilisateurs**
     - Créer, lire, mettre à jour les utilisateurs.
     - Chaque utilisateur a un nom, username, password, telephone, adresse et un email.
-    - Pour les besoins de test un utilisateur par defaut est créé au démarrage de l'application.
+    - Pour les besoins de test un utilisateur par defaut est créé au démarrage de l'application. 
+      * username : franko
+      * password : Franko#10
    
 3. **Contrôle d'Accès**
     - Restreindre l'accès aux tickets en fonction de l'utilisateur connecté.
