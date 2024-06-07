@@ -6,6 +6,7 @@ import com.kouamfranky.ticketapp.service.LocalUserDetailService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -61,6 +62,7 @@ public class WebSecurityConfig  {
                     response.sendError(HttpServletResponse.SC_UNAUTHORIZED, exception.getMessage());
                 }));
         http.authorizeHttpRequests(authorizeHttpRequest -> authorizeHttpRequest
+                .requestMatchers(HttpMethod.POST, "/users").permitAll()
                 .requestMatchers(
                         "/actuator/health",
                         "/actuator/metrics",
@@ -69,28 +71,13 @@ public class WebSecurityConfig  {
                         "/v3/api-docs/**",
                         "/swagger-ui/**",
                         "/swagger-ui.html",
-                        "/login").permitAll()
+                        "/login")
+                .permitAll()
                 .anyRequest().authenticated()
         );
 
         http.addFilterBefore(new TokenAuthorizationFilter(tokenProvider, localUserDetailService), UsernamePasswordAuthenticationFilter.class); // custom protocol Authorization
         return http.build();
     }
-//    @Bean
-//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//        return http.csrf(AbstractHttpConfigurer::disable)
-//                .headers(c->c.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
-//                .authorizeHttpRequests(c->c.requestMatchers(
-//                        "/",
-//                        "/h2-console/**",
-//                        "/swagger-ui.html",
-//                        "/swagger-resources/**",
-//                        "/v3/api-docs/**",
-//                        "/users/**",
-//                        "/swagger-ui/**"
-//                ).permitAll().anyRequest().authenticated())
-//                .build();
-//    }
-
 
 }
