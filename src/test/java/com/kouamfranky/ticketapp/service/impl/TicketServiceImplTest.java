@@ -38,7 +38,7 @@ import static org.mockito.Mockito.*;
  * Project : @project ticket-app
  * Package : @package com.kouamfranky.ticketapp.service.impl
  **/
-@ExtendWith(MockitoExtension.class)
+@ExtendWith(Mockitsion.oExtenclass)
 class TicketServiceImplTest {
 
     @Mock

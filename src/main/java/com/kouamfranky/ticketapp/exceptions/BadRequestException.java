@@ -16,28 +16,16 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  **/
 @ResponseStatus(HttpStatus.BAD_REQUEST)
 public class BadRequestException extends RuntimeException  {
-    private final String resourceName;
-    private final String fieldName;
-    private final Object fieldValue;
 
     public BadRequestException(String message) {
         super(message);
-        this.resourceName = null;
-        this.fieldName = null;
-        this.fieldValue = null;
     }
 
     public BadRequestException(String message, Throwable cause) {
         super(message, cause);
-        this.resourceName = null;
-        this.fieldName = null;
-        this.fieldValue = null;
     }
 
     public BadRequestException(String resourceName, String fieldName, Object fieldValue) {
         super(String.format("%s is inacceptable value %s : '%s'", resourceName, fieldName, fieldValue));
-        this.resourceName = resourceName;
-        this.fieldName = fieldName;
-        this.fieldValue = fieldValue;
     }
 }

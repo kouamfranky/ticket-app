@@ -58,9 +58,7 @@ public class WebSecurityConfig  {
         http.headers(c->c.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin));
         http.sessionManagement(sessionManager  -> sessionManager.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http.exceptionHandling(exceptionHandling -> exceptionHandling.authenticationEntryPoint(
-                (request, response, exception) -> {
-                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, exception.getMessage());
-                }));
+                (request, response, exception) -> response.sendError(HttpServletResponse.SC_UNAUTHORIZED, exception.getMessage())));
         http.authorizeHttpRequests(authorizeHttpRequest -> authorizeHttpRequest
                 .requestMatchers(HttpMethod.POST, "/users").permitAll()
                 .requestMatchers(

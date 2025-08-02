@@ -12,6 +12,7 @@ package com.kouamfranky.ticketapp.utils;
  * Package : @package com.kouamfranky.ticketapp.utils
  **/
 public class StringsUtils {
+    private StringsUtils(){}
     public static final String BINDING_RESULT_ERROR = "Requête non valide avec des attributs non valides dans votre requête";
     public static final String SUCCESS_MESSAGE = "Opération effectuée avec succès !";
     public static final String ERROR_MESSAGE = "Opération echouée !";

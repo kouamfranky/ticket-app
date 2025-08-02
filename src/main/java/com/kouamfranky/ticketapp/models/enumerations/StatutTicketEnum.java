@@ -14,7 +14,7 @@ package com.kouamfranky.ticketapp.models.enumerations;
 public enum StatutTicketEnum {
     ENCOURS(1,"En cours"),
     TERMINER(2,"terminé"),
-    ANNULER(2,"annulé"),
+    ANNULER(3,"annulé"),
     ;
 
     private final int cle;

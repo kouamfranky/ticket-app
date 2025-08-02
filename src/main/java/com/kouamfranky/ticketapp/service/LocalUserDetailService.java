@@ -22,7 +22,7 @@ import org.springframework.stereotype.Component;
  **/
 @Component
 public class LocalUserDetailService implements UserDetailsService {
-    Logger LOGGER = LogManager.getLogger(LocalUserDetailService.class);
+    Logger logger = LogManager.getLogger(LocalUserDetailService.class);
     private final UserRepository userRepository;
 
     public LocalUserDetailService(UserRepository userRepository) {
@@ -35,10 +35,10 @@ public class LocalUserDetailService implements UserDetailsService {
         User user = userRepository.findByUsername(username).orElse(null);
 
         if (user == null) {
-            LOGGER.error("User not found in the database");
+            logger.error("User not found in the database");
             throw new UsernameNotFoundException("User not found in the database");
         } else if (Boolean.FALSE.equals(user.getActive())) {
-            LOGGER.error("Failed to authenticate since user account is inactive");
+            logger.error("Failed to authenticate since user account is inactive");
             throw new UsernameNotFoundException("User is inactive");
         }
 
